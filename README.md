@@ -1,4 +1,6 @@
-# carl
+<p align="center">
+  <img src="docs/logo.svg" width="480" alt="carl"/>
+</p>
 
 **AI code review on every pull request — powered by any model on OpenRouter.**
 
