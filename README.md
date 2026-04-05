@@ -7,9 +7,10 @@
 On every PR open or push, carl:
 
 1. Reads the PR diff
-2. Loads review guidelines from `.github/carl.md`
-3. Sends both to an LLM via OpenRouter
-4. Posts a new review comment on the PR on every run
+2. Fetches the linked issue (via GitHub GraphQL) to understand the task being solved
+3. Loads review guidelines from `.github/carl.md`
+4. Sends diff + PR context + issue to an LLM via OpenRouter
+5. Posts a new review comment on the PR on every run
 
 If the PR diff exceeds the configured token limit, carl fails with an error and skips the review.  
 If OpenRouter is unavailable, carl posts a comment indicating it could not complete the review.
@@ -68,10 +69,31 @@ jobs:
 
 ## Inputs
 
-| Input                | Required | Default            | Description              |
-| -------------------- | -------- | ------------------ | ------------------------ |
-| `openrouter-api-key` | yes      | —                  | Your OpenRouter API key  |
-| `config-path`        | no       | `.github/carl.yml` | Path to carl config file |
+| Input                | Required | Default              | Description                                      |
+| -------------------- | -------- | -------------------- | ------------------------------------------------ |
+| `openrouter-api-key` | yes      | —                    | Your OpenRouter API key                          |
+| `github-token`       | no       | `${{ github.token }}` | GitHub token with `pull-requests: write` permission |
+| `config-path`        | no       | `.github/carl.yml`   | Path to carl config file                         |
+
+### Private repositories
+
+The default `github.token` only works in **public** repositories. For private repositories, create a [fine-grained PAT](https://github.com/settings/personal-access-tokens/new) with:
+
+- **Repository access:** your target repository
+- **Permissions:** `Contents` → Read-only, `Pull requests` → Read and write
+
+Add it as a secret (e.g. `GH_PAT`) and pass it explicitly:
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+    with:
+      token: ${{ secrets.GH_PAT }}
+  - uses: deyna256/carl@v1
+    with:
+      openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
+      github-token: ${{ secrets.GH_PAT }}
+```
 
 ## Project structure
 
