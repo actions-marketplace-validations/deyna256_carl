@@ -21,17 +21,19 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - uses: extractions/setup-just@v2
+
       - run: npm ci
 
-      - run: npm run format:check
+      - run: just format-check
 
-      - run: npm run lint
+      - run: just lint
 
-      - run: npm run typecheck
+      - run: just typecheck
 
-      - run: npm run test
+      - run: just test
 
-      - run: npm run build
+      - run: just build
 
       - name: Commit dist
         run: |
