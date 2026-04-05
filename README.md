@@ -97,14 +97,14 @@ carl/
 
 Requires [just](https://github.com/casey/just).
 
-| Command            | Description                    |
-| ------------------ | ------------------------------ |
-| `just lint`        | Run ESLint                     |
-| `just format`      | Format with Prettier           |
-| `just format-check`| Check formatting without writing |
-| `just typecheck`   | Run `tsc --noEmit`             |
-| `just test`        | Run Vitest                     |
-| `just build`       | Bundle with `@vercel/ncc`      |
+| Command             | Description                      |
+| ------------------- | -------------------------------- |
+| `just lint`         | Run ESLint                       |
+| `just format`       | Format with Prettier             |
+| `just format-check` | Check formatting without writing |
+| `just typecheck`    | Run `tsc --noEmit`               |
+| `just test`         | Run Vitest                       |
+| `just build`        | Bundle with `@vercel/ncc`        |
 
 ## CI
 
