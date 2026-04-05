@@ -2,7 +2,9 @@
   <img src="docs/logo.svg" width="480" alt="carl"/>
 </p>
 
-**AI code review on every pull request — powered by any model on OpenRouter.**
+<p align="center">
+  <strong>AI code review on every pull request. Any model. Zero infrastructure.</strong>
+</p>
 
 carl is a GitHub Action that reads your PR diff, looks up the linked issue to understand the task, and posts a review comment. One YAML file. No servers. No subscriptions.
 
