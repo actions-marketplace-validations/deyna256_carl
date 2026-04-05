@@ -6,7 +6,7 @@
   <strong>AI code review on every pull request. Any model. Zero infrastructure.</strong>
 </p>
 
-carl is a GitHub Action that reads your PR diff, looks up the linked issue to understand the task, and posts a review comment. One YAML file. No servers. No subscriptions.
+carl is a GitHub Action that reads your PR diff, looks up the linked issue to understand the task, and posts a review comment. One `.yml` file. No servers. No subscriptions.
 
 ```yaml
 - uses: deyna256/carl@v1
@@ -23,14 +23,14 @@ On every PR open or push:
 3. Asks the model: _did this PR solve the task, and is the code correct?_
 4. Posts the answer as a PR review comment
 
-If the diff is too large, carl fails fast with a clear error. If OpenRouter is unavailable, it posts a notice instead of silently failing.
+If the diff exceeds `max_diff_chars` or `max_files`, carl fails fast with a clear error. If OpenRouter is unavailable, it posts a notice instead of silently failing.
 
 ## Quick start
 
 **1. Add your OpenRouter key to repository secrets**
 
 `Settings → Secrets and variables → Actions → New repository secret`  
-Name: `OPENROUTER_API_KEY`
+Name: **`OPENROUTER_API_KEY`**
 
 **2. Create `.github/carl.yml`**
 
@@ -52,10 +52,9 @@ Then review the code for logic errors, security issues, and missing test coverag
 Skip stylistic comments.
 ```
 
-**4. Add the workflow**
+**4. Add `.github/workflows/carl.yml`**
 
 ```yaml
-# .github/workflows/carl.yml
 on:
   pull_request:
     types: [opened, synchronize]
@@ -83,19 +82,19 @@ jobs:
 
 ## Inputs
 
-| Input                | Required | Default               | Description                                         |
-| -------------------- | -------- | --------------------- | --------------------------------------------------- |
-| `openrouter-api-key` | yes      | —                     | Your OpenRouter API key                             |
-| `github-token`       | no       | `${{ github.token }}` | GitHub token with `pull-requests: write` permission |
-| `config-path`        | no       | `.github/carl.yml`    | Path to carl config file                            |
+| Input | Required | Default | Description |
+| --- | --- | --- | --- |
+| `openrouter-api-key` | **yes** | — | Your OpenRouter API key |
+| `github-token` | no | `${{ github.token }}` | GitHub token with `pull-requests: write` permission |
+| `config-path` | no | `.github/carl.yml` | Path to carl config file |
 
 ## Docs
 
-- [Configuration reference](docs/config.md) — all `carl.yml` options, writing guidelines, private repo setup
+- [Configuration reference](docs/config.md) — all `carl.yml` options, writing `carl.md`, private repo setup
 - [Project structure](docs/structure.md) — architecture, source modules, CI/CD
 
 ## Requirements
 
 - GitHub repository (public or private)
-- OpenRouter account with API key
+- [OpenRouter](https://openrouter.ai) account with API key
 - Any model available on OpenRouter
