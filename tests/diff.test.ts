@@ -205,9 +205,10 @@ describe('fetchLinkedIssues', () => {
 
     await fetchLinkedIssues(octokit as never, 'myorg', 'myrepo', 7);
 
-    expect(octokit.graphql).toHaveBeenCalledWith(
-      expect.any(String),
-      { owner: 'myorg', repo: 'myrepo', pr: 7 },
-    );
+    expect(octokit.graphql).toHaveBeenCalledWith(expect.any(String), {
+      owner: 'myorg',
+      repo: 'myrepo',
+      pr: 7,
+    });
   });
 });

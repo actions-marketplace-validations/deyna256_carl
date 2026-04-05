@@ -54,7 +54,9 @@ describe('buildPrompt', () => {
     const messages = buildPrompt('guidelines', 'diff', {
       title: 'fix: handle timeout',
       body: 'Closes #42',
-      linkedIssues: [{ number: 42, title: 'Timeouts not handled', body: 'Service crashes on timeout.' }],
+      linkedIssues: [
+        { number: 42, title: 'Timeouts not handled', body: 'Service crashes on timeout.' },
+      ],
     });
     expect(messages[1].content).toContain('#42');
     expect(messages[1].content).toContain('Timeouts not handled');

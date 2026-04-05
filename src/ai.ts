@@ -56,11 +56,7 @@ export interface PrContext {
   readonly linkedIssues: readonly LinkedIssue[];
 }
 
-export function buildPrompt(
-  guidelines: string,
-  diff: string,
-  pr?: PrContext,
-): OpenRouterMessage[] {
+export function buildPrompt(guidelines: string, diff: string, pr?: PrContext): OpenRouterMessage[] {
   let prSection = '';
 
   if (pr !== undefined) {
