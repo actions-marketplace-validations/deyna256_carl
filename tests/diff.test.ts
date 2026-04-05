@@ -1,5 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fetchDiff, filterFiles, buildDiffString, getFilteredDiff, DiffError } from '../src/diff';
+import {
+  fetchDiff,
+  filterFiles,
+  buildDiffString,
+  getFilteredDiff,
+  fetchLinkedIssues,
+  DiffError,
+} from '../src/diff';
 import type { DiffFile } from '../src/diff';
 
 function makeFile(overrides: Partial<DiffFile> = {}): DiffFile {
@@ -13,9 +20,16 @@ function makeFile(overrides: Partial<DiffFile> = {}): DiffFile {
   };
 }
 
-function makeMockOctokit(paginateResult: DiffFile[] = []) {
+function makeMockOctokit(paginateResult: DiffFile[] = [], graphqlResult?: unknown) {
   return {
     paginate: vi.fn().mockResolvedValue(paginateResult),
+    graphql: vi.fn().mockResolvedValue(
+      graphqlResult ?? {
+        repository: {
+          pullRequest: { closingIssuesReferences: { nodes: [] } },
+        },
+      },
+    ),
     rest: {
       pulls: {
         listFiles: vi.fn(),
@@ -150,5 +164,50 @@ describe('getFilteredDiff', () => {
     expect(result.rawDiff).toContain('src/index.ts');
     expect(result.rawDiff).not.toContain('dist/bundle.js');
     expect(result.totalChars).toBe(result.rawDiff.length);
+  });
+});
+
+describe('fetchLinkedIssues', () => {
+  it('returns issues from closingIssuesReferences', async () => {
+    const graphqlResult = {
+      repository: {
+        pullRequest: {
+          closingIssuesReferences: {
+            nodes: [
+              { number: 42, title: 'Cache not invalidated', body: 'Redis cache stays stale.' },
+            ],
+          },
+        },
+      },
+    };
+    const octokit = makeMockOctokit([], graphqlResult);
+
+    const result = await fetchLinkedIssues(octokit as never, 'owner', 'repo', 1);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({
+      number: 42,
+      title: 'Cache not invalidated',
+      body: 'Redis cache stays stale.',
+    });
+  });
+
+  it('returns empty array when no issues are linked', async () => {
+    const octokit = makeMockOctokit();
+
+    const result = await fetchLinkedIssues(octokit as never, 'owner', 'repo', 1);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('passes correct variables to graphql', async () => {
+    const octokit = makeMockOctokit();
+
+    await fetchLinkedIssues(octokit as never, 'myorg', 'myrepo', 7);
+
+    expect(octokit.graphql).toHaveBeenCalledWith(
+      expect.any(String),
+      { owner: 'myorg', repo: 'myrepo', pr: 7 },
+    );
   });
 });

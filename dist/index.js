@@ -38481,7 +38481,21 @@ class AiError extends Error {
 exports.AiError = AiError;
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const TIMEOUT_MS = 60_000;
-function buildPrompt(guidelines, diff) {
+function buildPrompt(guidelines, diff, pr) {
+    let prSection = '';
+    if (pr !== undefined) {
+        prSection += `PR title: ${pr.title}\n`;
+        if (pr.body.trim().length > 0) {
+            prSection += `PR description:\n${pr.body.trim()}\n`;
+        }
+        for (const issue of pr.linkedIssues) {
+            prSection += `\nLinked issue #${issue.number}: ${issue.title}\n`;
+            if (issue.body.trim().length > 0) {
+                prSection += `${issue.body.trim()}\n`;
+            }
+        }
+        prSection += '\n';
+    }
     return [
         {
             role: 'system',
@@ -38489,7 +38503,7 @@ function buildPrompt(guidelines, diff) {
         },
         {
             role: 'user',
-            content: `Review the following diff:\n\n\`\`\`diff\n${diff}\n\`\`\``,
+            content: `${prSection}Review the following diff:\n\n\`\`\`diff\n${diff}\n\`\`\``,
         },
     ];
 }
@@ -38704,6 +38718,7 @@ exports.DiffError = void 0;
 exports.fetchDiff = fetchDiff;
 exports.filterFiles = filterFiles;
 exports.buildDiffString = buildDiffString;
+exports.fetchLinkedIssues = fetchLinkedIssues;
 exports.getFilteredDiff = getFilteredDiff;
 const micromatch_1 = __importDefault(__nccwpck_require__(8785));
 class DiffError extends Error {
@@ -38747,6 +38762,22 @@ function buildDiffString(files) {
         .filter((f) => f.patch !== undefined)
         .map((f) => `--- a/${f.filename}\n+++ b/${f.filename}\n${f.patch}`)
         .join('\n\n');
+}
+async function fetchLinkedIssues(octokit, owner, repo, pullNumber) {
+    const result = await octokit.graphql(`query($owner: String!, $repo: String!, $pr: Int!) {
+      repository(owner: $owner, name: $repo) {
+        pullRequest(number: $pr) {
+          closingIssuesReferences(first: 10) {
+            nodes { number title body }
+          }
+        }
+      }
+    }`, { owner, repo, pr: pullNumber });
+    return result.repository.pullRequest.closingIssuesReferences.nodes.map((issue) => ({
+        number: issue.number,
+        title: issue.title,
+        body: issue.body ?? '',
+    }));
 }
 async function getFilteredDiff(octokit, owner, repo, pullNumber, ignorePatterns) {
     const allFiles = await fetchDiff(octokit, owner, repo, pullNumber);
@@ -38830,7 +38861,13 @@ async function run() {
             core.setFailed(`PR diff is ${totalChars} chars, exceeding the limit of ${config.max_diff_chars}`);
             return;
         }
-        const messages = (0, ai_1.buildPrompt)(guidelinesContent, rawDiff);
+        const linkedIssues = await (0, diff_1.fetchLinkedIssues)(octokit, owner, repo, pullNumber);
+        const prContext = {
+            title: pr.title,
+            body: pr.body ?? '',
+            linkedIssues,
+        };
+        const messages = (0, ai_1.buildPrompt)(guidelinesContent, rawDiff, prContext);
         const { review, usage } = await (0, ai_1.callOpenRouter)(apiKey, config.model, messages);
         if (usage !== undefined) {
             core.info(`Tokens — prompt: ${usage.prompt_tokens}, completion: ${usage.completion_tokens}, total: ${usage.total_tokens}`);

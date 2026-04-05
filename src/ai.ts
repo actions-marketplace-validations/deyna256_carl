@@ -44,7 +44,42 @@ export interface ReviewResult {
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const TIMEOUT_MS = 60_000;
 
-export function buildPrompt(guidelines: string, diff: string): OpenRouterMessage[] {
+export interface LinkedIssue {
+  readonly number: number;
+  readonly title: string;
+  readonly body: string;
+}
+
+export interface PrContext {
+  readonly title: string;
+  readonly body: string;
+  readonly linkedIssues: readonly LinkedIssue[];
+}
+
+export function buildPrompt(
+  guidelines: string,
+  diff: string,
+  pr?: PrContext,
+): OpenRouterMessage[] {
+  let prSection = '';
+
+  if (pr !== undefined) {
+    prSection += `PR title: ${pr.title}\n`;
+
+    if (pr.body.trim().length > 0) {
+      prSection += `PR description:\n${pr.body.trim()}\n`;
+    }
+
+    for (const issue of pr.linkedIssues) {
+      prSection += `\nLinked issue #${issue.number}: ${issue.title}\n`;
+      if (issue.body.trim().length > 0) {
+        prSection += `${issue.body.trim()}\n`;
+      }
+    }
+
+    prSection += '\n';
+  }
+
   return [
     {
       role: 'system',
@@ -52,7 +87,7 @@ export function buildPrompt(guidelines: string, diff: string): OpenRouterMessage
     },
     {
       role: 'user',
-      content: `Review the following diff:\n\n\`\`\`diff\n${diff}\n\`\`\``,
+      content: `${prSection}Review the following diff:\n\n\`\`\`diff\n${diff}\n\`\`\``,
     },
   ];
 }

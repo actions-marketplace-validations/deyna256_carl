@@ -39,6 +39,41 @@ describe('buildPrompt', () => {
     const messages = buildPrompt('  guidelines  ', 'diff');
     expect(messages[0].content).toBe('guidelines');
   });
+
+  it('includes PR title and body when pr context is provided', () => {
+    const messages = buildPrompt('guidelines', 'diff', {
+      title: 'feat: add caching',
+      body: 'Adds Redis cache for responses.',
+      linkedIssues: [],
+    });
+    expect(messages[1].content).toContain('feat: add caching');
+    expect(messages[1].content).toContain('Adds Redis cache for responses.');
+  });
+
+  it('includes linked issue title and body', () => {
+    const messages = buildPrompt('guidelines', 'diff', {
+      title: 'fix: handle timeout',
+      body: 'Closes #42',
+      linkedIssues: [{ number: 42, title: 'Timeouts not handled', body: 'Service crashes on timeout.' }],
+    });
+    expect(messages[1].content).toContain('#42');
+    expect(messages[1].content).toContain('Timeouts not handled');
+    expect(messages[1].content).toContain('Service crashes on timeout.');
+  });
+
+  it('includes only PR title when body is empty', () => {
+    const messages = buildPrompt('guidelines', 'diff', {
+      title: 'fix: typo',
+      body: '',
+      linkedIssues: [],
+    });
+    expect(messages[1].content).toContain('fix: typo');
+  });
+
+  it('omits PR section when pr context is not provided', () => {
+    const messages = buildPrompt('guidelines', 'diff');
+    expect(messages[1].content).not.toContain('PR title');
+  });
 });
 
 describe('callOpenRouter', () => {

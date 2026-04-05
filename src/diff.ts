@@ -81,6 +81,52 @@ export function buildDiffString(files: readonly DiffFile[]): string {
     .join('\n\n');
 }
 
+export interface LinkedIssue {
+  readonly number: number;
+  readonly title: string;
+  readonly body: string;
+}
+
+interface ClosingIssuesResponse {
+  repository: {
+    pullRequest: {
+      closingIssuesReferences: {
+        nodes: Array<{
+          number: number;
+          title: string;
+          body: string;
+        }>;
+      };
+    };
+  };
+}
+
+export async function fetchLinkedIssues(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  pullNumber: number,
+): Promise<LinkedIssue[]> {
+  const result = await octokit.graphql<ClosingIssuesResponse>(
+    `query($owner: String!, $repo: String!, $pr: Int!) {
+      repository(owner: $owner, name: $repo) {
+        pullRequest(number: $pr) {
+          closingIssuesReferences(first: 10) {
+            nodes { number title body }
+          }
+        }
+      }
+    }`,
+    { owner, repo, pr: pullNumber },
+  );
+
+  return result.repository.pullRequest.closingIssuesReferences.nodes.map((issue) => ({
+    number: issue.number,
+    title: issue.title,
+    body: issue.body ?? '',
+  }));
+}
+
 export async function getFilteredDiff(
   octokit: Octokit,
   owner: string,

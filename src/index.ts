@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { loadConfig, ConfigError } from './config';
-import { getFilteredDiff, DiffError } from './diff';
-import { buildPrompt, callOpenRouter, AiError } from './ai';
+import { getFilteredDiff, fetchLinkedIssues, DiffError } from './diff';
+import { buildPrompt, callOpenRouter, AiError, type PrContext } from './ai';
 import { postReviewComment, buildFallbackComment } from './comment';
 
 async function run(): Promise<void> {
@@ -49,7 +49,14 @@ async function run(): Promise<void> {
       return;
     }
 
-    const messages = buildPrompt(guidelinesContent, rawDiff);
+    const linkedIssues = await fetchLinkedIssues(octokit, owner, repo, pullNumber);
+
+    const prContext: PrContext = {
+      title: pr.title as string,
+      body: (pr.body as string | null) ?? '',
+      linkedIssues,
+    };
+    const messages = buildPrompt(guidelinesContent, rawDiff, prContext);
     const { review, usage } = await callOpenRouter(apiKey, config.model, messages);
 
     if (usage !== undefined) {
