@@ -18,9 +18,9 @@ async function run(): Promise<void> {
   const { owner, repo } = github.context.repo;
   const pullNumber = pr.number as number;
 
-  const token = process.env['GITHUB_TOKEN'];
-  if (token === undefined || token === '') {
-    core.setFailed('GITHUB_TOKEN environment variable is required');
+  const token = core.getInput('github-token') || process.env['GITHUB_TOKEN'];
+  if (!token) {
+    core.setFailed('GitHub token is required — set github-token input or GITHUB_TOKEN env var');
     return;
   }
 

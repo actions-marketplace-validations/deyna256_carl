@@ -14,6 +14,10 @@ inputs:
     description: 'Path to carl.yml config file'
     required: false
     default: '.github/carl.yml'
+  github-token:
+    description: 'GitHub token with pull-requests write permission'
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: 'node20'
