@@ -1,13 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 278 100" width="278" height="100">
   <defs>
-    <style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&amp;display=swap');</style>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&amp;display=swap');
+      .wordmark { fill: #1a1a1a; }
+      @media (prefers-color-scheme: dark) {
+        .wordmark { fill: #f0f0f0; }
+      }
+    </style>
   </defs>
   <text x="16" y="76"
     font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
     font-weight="400" font-size="70" fill="#534AB7">[</text>
   <text x="58" y="76"
     font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
-    font-weight="800" font-size="64" fill="#1a1a1a">carl</text>
+    font-weight="800" font-size="64" class="wordmark">carl</text>
   <text x="212" y="76"
     font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
     font-weight="400" font-size="70" fill="#534AB7">]</text>
