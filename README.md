@@ -31,7 +31,7 @@ Name: `OPENROUTER_API_KEY`
 **2. Create `.github/carl.yml`**
 
 ```yaml
-model: anthropic/claude-sonnet-4-5
+model: google/gemma-4-26b-a4b-it
 guidelines: .github/carl.md
 max_diff_chars: 20000
 max_files: 10

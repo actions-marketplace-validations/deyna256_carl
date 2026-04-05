@@ -5,7 +5,7 @@
 carl looks for this file at `.github/carl.yml` by default. Override the path via the `config-path` action input.
 
 ```yaml
-model: anthropic/claude-sonnet-4-5  # any OpenRouter model ID
+model: google/gemma-4-26b-a4b-it    # fast and capable; any OpenRouter model ID works
 guidelines: .github/carl.md         # path to your review prompt
 max_diff_chars: 20000               # hard limit on diff size in characters
 max_files: 10                       # hard limit on number of changed files
@@ -18,7 +18,7 @@ ignore:                             # glob patterns — matched files are exclud
 
 | Field            | Default                    | Description                                                                                      |
 | ---------------- | -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `model`          | `anthropic/claude-sonnet-4-5` | Any model ID from [openrouter.ai/models](https://openrouter.ai/models)                        |
+| `model`          | `google/gemma-4-26b-a4b-it` | Any model ID from [openrouter.ai/models](https://openrouter.ai/models)                        |
 | `guidelines`     | `.github/carl.md`          | Path to the Markdown file containing your review prompt                                          |
 | `max_diff_chars` | `20000`                    | If the diff exceeds this character count, carl fails the action and skips the review             |
 | `max_files`      | `10`                       | If the PR touches more files than this (after ignore filtering), carl fails and skips the review |
