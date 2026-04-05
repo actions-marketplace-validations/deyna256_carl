@@ -78,6 +78,7 @@ jobs:
 ```
 carl/
 ├── action.yml
+├── Justfile
 ├── src/
 │   ├── index.ts       # entry point, orchestration
 │   ├── config.ts      # reads carl.yml + carl.md
@@ -92,16 +93,39 @@ carl/
 └── dist/              # compiled bundle, committed to main
 ```
 
+## Development
+
+Requires [just](https://github.com/casey/just).
+
+| Command            | Description                    |
+| ------------------ | ------------------------------ |
+| `just lint`        | Run ESLint                     |
+| `just format`      | Format with Prettier           |
+| `just format-check`| Check formatting without writing |
+| `just typecheck`   | Run `tsc --noEmit`             |
+| `just test`        | Run Vitest                     |
+| `just build`       | Bundle with `@vercel/ncc`      |
+
 ## CI
 
-| Job       | Trigger          | Steps                                                           |
-| --------- | ---------------- | --------------------------------------------------------------- |
-| `ci`      | PR, push to main | lint → typecheck → test → build                                 |
-| `release` | push `v*` tag    | lint → typecheck → test → build → commit dist/ → create release |
+### `ci` — PR and push to main
+
+Five jobs run in parallel; `build` starts only after all pass:
+
+```
+format ─┐
+lint    ├─→ build
+typecheck┤
+test   ─┘
+```
+
+### `release` — push `v*` tag
+
+Sequential: format-check → lint → typecheck → test → build → commit `dist/` → create release
 
 - **Linting:** ESLint + Prettier
 - **Type checking:** `tsc --noEmit`
-- **Tests:** Vitest (unit + snapshot); integration tests (real OpenRouter call, mocked GitHub API) run on main only
+- **Tests:** Vitest (unit + snapshot)
 - **Build:** `@vercel/ncc` bundles into `dist/index.js`
 - **Versioning:** semver tags (`v1.0.0`) + floating major tag (`v1` → latest `v1.x`)
 
