@@ -85,11 +85,11 @@ jobs:
 
 ## Inputs
 
-| Input | Required | Default | Description |
-| --- | --- | --- | --- |
-| `openrouter-api-key` | **yes** | — | Your OpenRouter API key |
-| `github-token` | no | `${{ github.token }}` | GitHub token with `pull-requests: write` permission |
-| `config-path` | no | `.github/carl.yml` | Path to carl config file |
+| Input                | Required | Default               | Description                                         |
+| -------------------- | -------- | --------------------- | --------------------------------------------------- |
+| `openrouter-api-key` | **yes**  | —                     | Your OpenRouter API key                             |
+| `github-token`       | no       | `${{ github.token }}` | GitHub token with `pull-requests: write` permission |
+| `config-path`        | no       | `.github/carl.yml`    | Path to carl config file                            |
 
 ## Docs
 

@@ -107,16 +107,16 @@ The semver tag trigger uses `v[0-9]+.[0-9]+.[0-9]+` to avoid triggering on float
 
 ## Tech stack
 
-| Concern        | Tool                    |
-| -------------- | ----------------------- |
-| Runtime        | Node.js 20              |
-| Language       | TypeScript (strict)     |
-| GitHub API     | `@actions/github`       |
-| HTTP client    | Native `fetch`          |
-| Config parsing | `js-yaml`               |
-| Glob filtering | `micromatch`            |
-| Bundler        | `@vercel/ncc`           |
-| Tests          | Vitest                  |
+| Concern        | Tool                       |
+| -------------- | -------------------------- |
+| Runtime        | Node.js 20                 |
+| Language       | TypeScript (strict)        |
+| GitHub API     | `@actions/github`          |
+| HTTP client    | Native `fetch`             |
+| Config parsing | `js-yaml`                  |
+| Glob filtering | `micromatch`               |
+| Bundler        | `@vercel/ncc`              |
+| Tests          | Vitest                     |
 | Lint           | ESLint + typescript-eslint |
-| Format         | Prettier                |
-| Task runner    | just                    |
+| Format         | Prettier                   |
+| Task runner    | just                       |

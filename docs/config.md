@@ -5,24 +5,24 @@
 carl looks for this file at `.github/carl.yml` by default. Override the path via the `config-path` action input.
 
 ```yaml
-model: google/gemma-4-26b-a4b-it    # fast and capable; any OpenRouter model ID works
-guidelines: .github/carl.md         # path to your review prompt
-max_diff_chars: 20000               # hard limit on diff size in characters
-max_files: 10                       # hard limit on number of changed files
-ignore:                             # glob patterns — matched files are excluded from the diff
+model: google/gemma-4-26b-a4b-it # fast and capable; any OpenRouter model ID works
+guidelines: .github/carl.md # path to your review prompt
+max_diff_chars: 20000 # hard limit on diff size in characters
+max_files: 10 # hard limit on number of changed files
+ignore: # glob patterns — matched files are excluded from the diff
   - '*.lock'
   - 'dist/**'
 ```
 
 ### Fields
 
-| Field            | Default                    | Description                                                                                      |
-| ---------------- | -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `model`          | `google/gemma-4-26b-a4b-it` | Any model ID from [openrouter.ai/models](https://openrouter.ai/models)                        |
-| `guidelines`     | `.github/carl.md`          | Path to the Markdown file containing your review prompt                                          |
-| `max_diff_chars` | `20000`                    | If the diff exceeds this character count, carl fails the action and skips the review             |
-| `max_files`      | `10`                       | If the PR touches more files than this (after ignore filtering), carl fails and skips the review |
-| `ignore`         | `[]`                       | Glob patterns (via [micromatch](https://github.com/micromatch/micromatch)) to exclude files      |
+| Field            | Default                     | Description                                                                                      |
+| ---------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
+| `model`          | `google/gemma-4-26b-a4b-it` | Any model ID from [openrouter.ai/models](https://openrouter.ai/models)                           |
+| `guidelines`     | `.github/carl.md`           | Path to the Markdown file containing your review prompt                                          |
+| `max_diff_chars` | `20000`                     | If the diff exceeds this character count, carl fails the action and skips the review             |
+| `max_files`      | `10`                        | If the PR touches more files than this (after ignore filtering), carl fails and skips the review |
+| `ignore`         | `[]`                        | Glob patterns (via [micromatch](https://github.com/micromatch/micromatch)) to exclude files      |
 
 ### Limits behaviour
 
@@ -36,7 +36,7 @@ This file is your system prompt. The model receives it as instructions before se
 
 carl automatically prepends context about the PR:
 
-```
+````
 PR title: feat: add Redis cache
 PR description: Implements exact-match caching for /ask responses.
 
@@ -46,8 +46,9 @@ Users are hitting the API repeatedly with identical prompts...
 Review the following diff:
 ```diff
 ...
-```
-```
+````
+
+````
 
 So your guidelines can reference "the linked issue" and the model will know what you mean.
 
@@ -67,7 +68,7 @@ Flag new logic paths that have no corresponding test.
 
 ## Skip
 Formatting and style — handled by the linter.
-```
+````
 
 ---
 
