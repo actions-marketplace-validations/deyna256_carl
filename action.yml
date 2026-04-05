@@ -1,0 +1,20 @@
+name: 'carl — Code Automated Review with LLM'
+description: 'Reviews pull requests using AI via OpenRouter'
+author: 'deyna256'
+
+branding:
+  icon: 'code'
+  color: 'blue'
+
+inputs:
+  openrouter-api-key:
+    description: 'OpenRouter API key'
+    required: true
+  config-path:
+    description: 'Path to carl.yml config file'
+    required: false
+    default: '.github/carl.yml'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
