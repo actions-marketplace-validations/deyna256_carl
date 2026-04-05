@@ -95,9 +95,7 @@ describe('loadConfig', () => {
   });
 
   it('throws ConfigError when config file cannot be read', async () => {
-    readFileMock.mockRejectedValueOnce(
-      Object.assign(new Error('ENOENT'), { code: 'ENOENT' }),
-    );
+    readFileMock.mockRejectedValueOnce(Object.assign(new Error('ENOENT'), { code: 'ENOENT' }));
 
     await expect(loadConfig('.github/carl.yml')).rejects.toThrow(ConfigError);
   });
@@ -111,9 +109,7 @@ describe('loadConfig', () => {
   });
 
   it('throws ConfigError when YAML is syntactically invalid', async () => {
-    readFileMock.mockResolvedValueOnce(
-      'model: [unclosed bracket' as unknown as Buffer,
-    );
+    readFileMock.mockResolvedValueOnce('model: [unclosed bracket' as unknown as Buffer);
 
     await expect(loadConfig('.github/carl.yml')).rejects.toThrow(ConfigError);
   });

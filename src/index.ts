@@ -38,9 +38,7 @@ async function run(): Promise<void> {
     );
 
     if (files.length > config.max_files) {
-      core.setFailed(
-        `PR has ${files.length} files, exceeding the limit of ${config.max_files}`,
-      );
+      core.setFailed(`PR has ${files.length} files, exceeding the limit of ${config.max_files}`);
       return;
     }
 

@@ -7,6 +7,7 @@ You are reviewing a TypeScript codebase for a GitHub Action. Focus on:
 - **Test coverage**: flag new logic paths that lack a corresponding test case
 
 Do not comment on:
+
 - Code style or formatting (handled by Prettier/ESLint)
 - Naming conventions unless they cause genuine confusion
 - Purely aesthetic preferences

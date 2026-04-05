@@ -5,6 +5,7 @@
 ## How it works
 
 On every PR open or push, carl:
+
 1. Reads the PR diff
 2. Loads review guidelines from `.github/carl.md`
 3. Sends both to an LLM via OpenRouter
@@ -24,19 +25,20 @@ Name: `OPENROUTER_API_KEY`
 ### 2. Create `.github/carl.yml`
 
 ```yaml
-model: anthropic/claude-sonnet-4-5  # any OpenRouter-supported model
-guidelines: .github/carl.md         # path to your review prompt
-max_diff_chars: 20000               # diff size limit in characters; exceeding this fails the action
-max_files: 10                        # if exceeded, the review is skipped with an error
+model: anthropic/claude-sonnet-4-5 # any OpenRouter-supported model
+guidelines: .github/carl.md # path to your review prompt
+max_diff_chars: 20000 # diff size limit in characters; exceeding this fails the action
+max_files: 10 # if exceeded, the review is skipped with an error
 ignore:
-  - "*.lock"
-  - "dist/**"
+  - '*.lock'
+  - 'dist/**'
 ```
 
 ### 3. Create `.github/carl.md` — your review prompt
 
 ```md
 Review the code for:
+
 - Logic errors and edge cases
 - Security issues (hardcoded secrets, injections)
 - Missing test coverage for new logic
@@ -66,10 +68,10 @@ jobs:
 
 ## Inputs
 
-| Input | Required | Default | Description |
-|---|---|---|---|
-| `openrouter-api-key` | yes | — | Your OpenRouter API key |
-| `config-path` | no | `.github/carl.yml` | Path to carl config file |
+| Input                | Required | Default            | Description              |
+| -------------------- | -------- | ------------------ | ------------------------ |
+| `openrouter-api-key` | yes      | —                  | Your OpenRouter API key  |
+| `config-path`        | no       | `.github/carl.yml` | Path to carl config file |
 
 ## Project structure
 
@@ -92,15 +94,15 @@ carl/
 
 ## CI
 
-| Job | Trigger | Steps |
-|---|---|---|
-| `ci` | PR, push to main | lint → typecheck → test → build |
-| `release` | push `v*` tag | lint → typecheck → test → build → commit dist/ → create release |
+| Job       | Trigger          | Steps                                                           |
+| --------- | ---------------- | --------------------------------------------------------------- |
+| `ci`      | PR, push to main | lint → typecheck → test → build                                 |
+| `release` | push `v*` tag    | lint → typecheck → test → build → commit dist/ → create release |
 
-- **Linting:** ESLint + Prettier  
-- **Type checking:** `tsc --noEmit`  
-- **Tests:** Vitest (unit + snapshot); integration tests (real OpenRouter call, mocked GitHub API) run on main only  
-- **Build:** `@vercel/ncc` bundles into `dist/index.js`  
+- **Linting:** ESLint + Prettier
+- **Type checking:** `tsc --noEmit`
+- **Tests:** Vitest (unit + snapshot); integration tests (real OpenRouter call, mocked GitHub API) run on main only
+- **Build:** `@vercel/ncc` bundles into `dist/index.js`
 - **Versioning:** semver tags (`v1.0.0`) + floating major tag (`v1` → latest `v1.x`)
 
 ## Requirements

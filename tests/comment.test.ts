@@ -76,6 +76,8 @@ describe('buildFallbackComment', () => {
   });
 
   it('matches snapshot', () => {
-    expect(buildFallbackComment('OpenRouter returned HTTP 503: Service Unavailable')).toMatchSnapshot();
+    expect(
+      buildFallbackComment('OpenRouter returned HTTP 503: Service Unavailable'),
+    ).toMatchSnapshot();
   });
 });

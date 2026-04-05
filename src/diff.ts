@@ -37,9 +37,7 @@ export async function fetchDiff(
   repo: string,
   pullNumber: number,
 ): Promise<DiffFile[]> {
-  type ListFilesItem = Awaited<
-    ReturnType<typeof octokit.rest.pulls.listFiles>
-  >['data'][number];
+  type ListFilesItem = Awaited<ReturnType<typeof octokit.rest.pulls.listFiles>>['data'][number];
 
   let items: ListFilesItem[];
   try {

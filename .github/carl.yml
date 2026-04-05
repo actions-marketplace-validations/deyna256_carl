@@ -3,7 +3,7 @@ guidelines: .github/carl.md
 max_diff_chars: 20000
 max_files: 10
 ignore:
-  - "*.lock"
-  - "dist/**"
-  - "coverage/**"
-  - "out/**"
+  - '*.lock'
+  - 'dist/**'
+  - 'coverage/**'
+  - 'out/**'

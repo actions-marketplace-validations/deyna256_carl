@@ -31,20 +31,14 @@ describe('filterFiles', () => {
   });
 
   it('removes files matching a glob pattern', () => {
-    const files = [
-      makeFile({ filename: 'yarn.lock' }),
-      makeFile({ filename: 'src/index.ts' }),
-    ];
+    const files = [makeFile({ filename: 'yarn.lock' }), makeFile({ filename: 'src/index.ts' })];
     const result = filterFiles(files, ['*.lock']);
     expect(result).toHaveLength(1);
     expect(result[0].filename).toBe('src/index.ts');
   });
 
   it('removes files matching dist/** pattern', () => {
-    const files = [
-      makeFile({ filename: 'dist/index.js' }),
-      makeFile({ filename: 'src/ai.ts' }),
-    ];
+    const files = [makeFile({ filename: 'dist/index.js' }), makeFile({ filename: 'src/ai.ts' })];
     const result = filterFiles(files, ['dist/**']);
     expect(result).toHaveLength(1);
     expect(result[0].filename).toBe('src/ai.ts');
@@ -62,10 +56,7 @@ describe('filterFiles', () => {
   });
 
   it('matches dotfiles with dot: true', () => {
-    const files = [
-      makeFile({ filename: '.env' }),
-      makeFile({ filename: 'src/index.ts' }),
-    ];
+    const files = [makeFile({ filename: '.env' }), makeFile({ filename: 'src/index.ts' })];
     const result = filterFiles(files, ['.env']);
     expect(result).toHaveLength(1);
     expect(result[0].filename).toBe('src/index.ts');
@@ -142,7 +133,13 @@ describe('getFilteredDiff', () => {
   it('composes fetch + filter + build and returns totalChars', async () => {
     const rawFiles = [
       { filename: 'src/index.ts', patch: '+code', status: 'modified', additions: 1, deletions: 0 },
-      { filename: 'dist/bundle.js', patch: '+bundle', status: 'modified', additions: 1, deletions: 0 },
+      {
+        filename: 'dist/bundle.js',
+        patch: '+bundle',
+        status: 'modified',
+        additions: 1,
+        deletions: 0,
+      },
     ];
     const octokit = makeMockOctokit(rawFiles as unknown as DiffFile[]);
 

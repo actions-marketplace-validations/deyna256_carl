@@ -68,10 +68,7 @@ describe('callOpenRouter', () => {
   });
 
   it('throws AiError when choices array is empty', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue(makeResponse({ id: 'x', choices: [] })),
-    );
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(makeResponse({ id: 'x', choices: [] })));
 
     await expect(callOpenRouter('key', 'model', MESSAGES)).rejects.toThrow(AiError);
   });
