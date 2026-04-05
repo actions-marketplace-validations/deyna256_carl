@@ -1,6 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 278 100" width="278" height="100">
   <defs>
-    <style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&amp;display=swap');</style>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&amp;display=swap');
+      .cursor { animation: blink 1.1s step-end infinite; }
+      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
   </defs>
   <text x="16" y="76"
     font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
@@ -11,5 +15,5 @@
   <text x="212" y="76"
     font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
     font-weight="400" font-size="70" fill="#534AB7">]</text>
-  <rect x="258" y="22" width="4" height="56" fill="#534AB7" rx="1"/>
+  <rect class="cursor" x="258" y="22" width="4" height="56" fill="#534AB7" rx="1"/>
 </svg>
