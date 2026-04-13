@@ -38563,19 +38563,23 @@ async function callOpenRouter(apiKey, model, messages) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.buildCarlMarker = buildCarlMarker;
 exports.deletePreviousCarlComments = deletePreviousCarlComments;
 exports.postReviewComment = postReviewComment;
 exports.buildFallbackComment = buildFallbackComment;
-const CARL_MARKER = '<!-- carl:review -->';
+function buildCarlMarker(instanceId) {
+    return `<!-- carl:review instance=${instanceId} -->`;
+}
 async function deletePreviousCarlComments(options) {
-    const { octokit, owner, repo, pullNumber } = options;
+    const { octokit, owner, repo, pullNumber, instanceId } = options;
     const { data: comments } = await octokit.rest.issues.listComments({
         owner,
         repo,
         issue_number: pullNumber,
         per_page: 100,
     });
-    const carlComments = comments.filter((c) => c.body?.includes(CARL_MARKER));
+    const marker = buildCarlMarker(instanceId);
+    const carlComments = comments.filter((c) => c.body?.includes(marker));
     await Promise.all(carlComments.map((c) => octokit.rest.issues.deleteComment({
         owner,
         repo,
@@ -38657,11 +38661,19 @@ const DEFAULTS = {
     max_files: 10,
     ignore: [],
 };
+const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
 function parseConfig(raw) {
     if (typeof raw !== 'object' || raw === null) {
         throw new ConfigError('carl.yml must be a YAML mapping');
     }
     const r = raw;
+    const instance_id = r['instance_id'];
+    if (typeof instance_id !== 'string' || instance_id.trim().length === 0) {
+        throw new ConfigError('`instance_id` is required and must be a non-empty string');
+    }
+    if (!INSTANCE_ID_RE.test(instance_id)) {
+        throw new ConfigError('`instance_id` may only contain letters, digits, hyphens, and underscores');
+    }
     const model = r['model'] !== undefined ? r['model'] : DEFAULTS.model;
     if (typeof model !== 'string' || model.trim().length === 0) {
         throw new ConfigError('`model` must be a non-empty string');
@@ -38684,7 +38696,7 @@ function parseConfig(raw) {
     if (!Array.isArray(ignore) || !ignore.every((item) => typeof item === 'string')) {
         throw new ConfigError('`ignore` must be an array of strings');
     }
-    return { model, guidelines, max_diff_chars, max_files, ignore };
+    return { instance_id, model, guidelines, max_diff_chars, max_files, ignore };
 }
 async function loadConfig(configPath) {
     let rawYaml;
@@ -38888,13 +38900,19 @@ async function run() {
         if (usage !== undefined) {
             core.info(`Tokens — prompt: ${usage.prompt_tokens}, completion: ${usage.completion_tokens}, total: ${usage.total_tokens}`);
         }
-        await (0, comment_1.deletePreviousCarlComments)({ octokit, owner, repo, pullNumber });
+        await (0, comment_1.deletePreviousCarlComments)({
+            octokit,
+            owner,
+            repo,
+            pullNumber,
+            instanceId: config.instance_id,
+        });
         await (0, comment_1.postReviewComment)({
             octokit,
             owner,
             repo,
             pullNumber,
-            body: `<!-- carl:review -->\n### carl review\n\n${review}`,
+            body: `${(0, comment_1.buildCarlMarker)(config.instance_id)}\n### carl review\n\n${review}`,
         });
         core.info('Review posted successfully');
     }
