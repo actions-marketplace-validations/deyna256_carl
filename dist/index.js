@@ -38563,15 +38563,31 @@ async function callOpenRouter(apiKey, model, messages) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.deletePreviousCarlComments = deletePreviousCarlComments;
 exports.postReviewComment = postReviewComment;
 exports.buildFallbackComment = buildFallbackComment;
-async function postReviewComment(options) {
-    const { octokit, owner, repo, pullNumber, body } = options;
-    await octokit.rest.pulls.createReview({
+const CARL_MARKER = '<!-- carl:review -->';
+async function deletePreviousCarlComments(options) {
+    const { octokit, owner, repo, pullNumber } = options;
+    const { data: comments } = await octokit.rest.issues.listComments({
         owner,
         repo,
-        pull_number: pullNumber,
-        event: 'COMMENT',
+        issue_number: pullNumber,
+        per_page: 100,
+    });
+    const carlComments = comments.filter((c) => c.body?.includes(CARL_MARKER));
+    await Promise.all(carlComments.map((c) => octokit.rest.issues.deleteComment({
+        owner,
+        repo,
+        comment_id: c.id,
+    })));
+}
+async function postReviewComment(options) {
+    const { octokit, owner, repo, pullNumber, body } = options;
+    await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: pullNumber,
         body,
     });
 }
@@ -38872,12 +38888,13 @@ async function run() {
         if (usage !== undefined) {
             core.info(`Tokens — prompt: ${usage.prompt_tokens}, completion: ${usage.completion_tokens}, total: ${usage.total_tokens}`);
         }
+        await (0, comment_1.deletePreviousCarlComments)({ octokit, owner, repo, pullNumber });
         await (0, comment_1.postReviewComment)({
             octokit,
             owner,
             repo,
             pullNumber,
-            body: `### carl review\n\n${review}`,
+            body: `<!-- carl:review -->\n### carl review\n\n${review}`,
         });
         core.info('Review posted successfully');
     }
